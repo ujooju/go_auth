@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 	"time"
 )
 
-func home_page(w http.ResponseWriter, r *http.Request) {
+func start_page(w http.ResponseWriter, r *http.Request) {
 	f, err := os.Open("pages/index.html")
 	if err != nil {
 		log.Fatal("can't open index.html")
@@ -17,13 +18,8 @@ func home_page(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-func auth(w http.ResponseWriter, r *http.Request) {
-	session, err := r.Cookie("session_id")
-	if err == http.ErrNoCookie {
-		http.Redirect(w, r, "/sign_in", http.StatusSeeOther)
-		return
-	}
-	w.Write([]byte(session.String()))
+func home_page(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "home")
 }
 
 func sign_in(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +36,7 @@ func sign_in(w http.ResponseWriter, r *http.Request) {
 		Expires: expires,
 	}
 	http.SetCookie(w, &newSession)
-	http.Redirect(w, r, "/auth", http.StatusFound)
+	http.Redirect(w, r, "/home", http.StatusFound)
 }
 
 func sign_up(w http.ResponseWriter, r *http.Request) {
@@ -49,5 +45,7 @@ func sign_up(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(f)
 		w.Write(data)
 		return
+	} else if r.Method == http.MethodPost {
+
 	}
 }
